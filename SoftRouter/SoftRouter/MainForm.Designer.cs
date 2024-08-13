@@ -188,7 +188,7 @@
 			// 
 			this.toolStripComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.toolStripComboBox1.Name = "toolStripComboBox1";
-			this.toolStripComboBox1.Size = new System.Drawing.Size(250, 35);
+			this.toolStripComboBox1.Size = new System.Drawing.Size(350, 35);
 			// 
 			// toolStripButton4
 			// 

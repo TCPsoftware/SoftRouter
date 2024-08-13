@@ -6,6 +6,7 @@ using SharpPcap;
 using System.Net;
 using System.Net.NetworkInformation;
 using SharpPcap.WinPcap;
+using SharpPcap.LibPcap;
 
 namespace SoftRouter
 {
@@ -20,15 +21,15 @@ namespace SoftRouter
 		private string _name;
 		#endregion
 
-		#region Device类构造函数
+		#region Device类构造函数，需要是有ipv4地址的设备
 		public Device(ICaptureDevice icd)
 		{
 			WinPcapDevice win = (WinPcapDevice)icd;
 
 			this._interface = icd;
 			this._mac = win.MacAddress;
-			this._ip = win.Addresses[0].Addr.ipAddress;
-			this._mask = win.Addresses[0].Netmask.ipAddress;
+			this._ip = Device.Get_Address_of_Ipv4(win).Addr.ipAddress;
+			this._mask = Device.Get_Address_of_Ipv4(win).Netmask.ipAddress;
 			this._net = SoftRouter.GetNetIpAddress(_ip, _mask);
 			this._name = win.Interface.FriendlyName + " " + icd.Description.Split('\'')[1];
 		}
@@ -43,8 +44,8 @@ namespace SoftRouter
 			foreach (ICaptureDevice dev in devices)
 			{
 				WinPcapDevice winDev = (WinPcapDevice)dev;
-				IPAddress devIp = winDev.Addresses[0].Addr.ipAddress;
-				if (devIp != null && devIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+				IPAddress devIp = Device.Get_Address_of_Ipv4(winDev).Addr.ipAddress;
+				if (devIp != null) // && devIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
 				{
 					dev.Open(DeviceMode.Promiscuous);
 					deviceList.Add(new Device(dev));
@@ -53,6 +54,21 @@ namespace SoftRouter
 			return deviceList;
 		}
 		#endregion
+
+		static public PcapAddress Get_Address_of_Ipv4(WinPcapDevice winDev)
+		{
+			if (winDev.Addresses != null && winDev.Addresses.Count > 0)
+			{
+				foreach (PcapAddress _addr in winDev.Addresses)
+				{
+					if (_addr.Addr.ipAddress != null && _addr.Addr.ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+					{ // 找到一个ipv4
+						return _addr; // .Addr.ipAddress
+					}
+				}
+			}
+			return null;
+		}
 
 		public ICaptureDevice Interface
 		{
@@ -67,6 +83,14 @@ namespace SoftRouter
 			get
 			{
 				return _mac;
+			}
+		}
+
+		public IPAddress _IPAddress
+		{
+			get
+			{
+				return _ip;
 			}
 		}
 

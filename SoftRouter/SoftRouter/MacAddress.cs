@@ -22,7 +22,7 @@ namespace SoftRouter
 				PhysicalAddress targetMac = PhysicalAddress.Parse("00-00-00-00-00-00");
 				IPAddress targetIp = ip;
 				PhysicalAddress senderMac = dev.MacAddress;
-				IPAddress senderIp = ((WinPcapDevice)dev.Interface).Addresses[0].Addr.ipAddress;
+				IPAddress senderIp = dev._IPAddress;
 				PhysicalAddress destMac = PhysicalAddress.Parse("FF-FF-FF-FF-FF-FF");
 
 				PacketDotNet.ARPPacket arp = new ARPPacket(ARPOperation.Request, targetMac, targetIp, senderMac, senderIp);
