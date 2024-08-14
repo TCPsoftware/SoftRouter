@@ -43,8 +43,8 @@ namespace SoftRouter
 
 			foreach (ICaptureDevice dev in devices)
 			{
-				WinPcapDevice winDev = (WinPcapDevice)dev;
-				IPAddress devIp = Device.Get_Address_of_Ipv4(winDev).Addr.ipAddress;
+				WinPcapDevice winDev = (WinPcapDevice)dev; // .Addr.ipAddress, 返回值为null时引发异常
+				PcapAddress devIp = Device.Get_Address_of_Ipv4(winDev);
 				if (devIp != null) // && devIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
 				{
 					dev.Open(DeviceMode.Promiscuous);
